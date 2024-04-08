@@ -15,6 +15,9 @@
     body {
       position: relative;
     }
+    h4 {
+      padding-right: 5px;
+    }
     .image-container {
       position: relative;
       /* Set width and height if needed */
@@ -23,6 +26,7 @@
     .form {
       position: absolute;
       margin-top: 30%;
+      padding-bottom: 50px;
     }
     .bottom-image,
     .top-image {
@@ -54,11 +58,11 @@
       </div>
       <div style="display: flex">
         <h4>Cipher:</h4>
-        <h4 id="msg"></h4>
+        <p id="msg" style="font-size: 1.3em; height: 1.4em"></p>
       </div>
       <div style="display: flex">
         <h4>Shift:</h4>
-        <h4 id="shift">0</h4>
+        <h4 id="shift" style="height: 1.4em">0</h4>
       </div>
       <button id="reset" onclick="resetRotation()">Reset</button>
     </div>
