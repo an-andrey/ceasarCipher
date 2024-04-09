@@ -109,13 +109,18 @@
       };
       shift = 0;
       updateMessage = function (message) {
-        msgList = [...message];
-        for (let i = 0; i < msgList.length; i++) {
-          //shifts char by 1 in alphabet, if z -> a
-          msgList[i] = alphabet[(alphabet.indexOf(msgList[i]) + shift) % 26];
+        if (!parseInt(message)) {
+          message = message.toLowerCase();
+          msgList = [...message];
+          for (let i = 0; i < msgList.length; i++) {
+            //shifts char by 1 in alphabet, if z -> a
+            msgList[i] = alphabet[(alphabet.indexOf(msgList[i]) + shift) % 26];
+          }
+          message = msgList.join("");
+          return message;
+        } else {
+          return null;
         }
-        message = msgList.join("");
-        return message;
       };
 
       document.querySelector("#message").addEventListener("input", () => {
