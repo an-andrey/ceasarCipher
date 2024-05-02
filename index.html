@@ -12,64 +12,70 @@
     <title>Ceasar Cipher</title>
   </head>
   <style>
-    body {
-      position: relative;
-    }
     h4 {
-      padding-right: 5px;
+      margin-top: 15px;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
     }
     .image-container {
+      display: flex;
+      align-items: center;
+    }
+    .stacked-images {
       position: relative;
-      /* Set width and height if needed */
+      margin-right: 15px;
     }
-
-    .form {
-      position: absolute;
-      margin-top: 30%;
-      padding-bottom: 50px;
+    .stacked-images img {
+      width: 100%;
+      display: block;
     }
-    .bottom-image,
-    .top-image {
+    .overlay-image {
+      transition: transform 0.3s ease-in;
       position: absolute;
-      width: 40%;
       top: 0;
       left: 0;
     }
-
-    .top-image {
-      z-index: 1; /* Places the top image above the bottom image */
-      /* Adjust positioning of the top image if needed */
-    }
-    .rotate {
-      transition: transform 0.5s ease-in; /* Animation duration */
-      transform-origin: 50% 50%; /* Set rotation origin (e.g., upper-right corner) */
-    }
   </style>
   <body>
-    <h1>Ceasar Cipher</h1>
-    <div class="image-container">
-      <img class="rotate bottom-image" src="wheel.png" />
-      <img class="top-image" src="wheel2.png" />
-    </div>
+    <h1 style="padding-bottom: 15px">Ceasar Cipher</h1>
     <div class="form">
       <div>
-        <button id="rotateBtn">Shift</button>
         <input type="text" id="message" />
+        <button onclick="rotateImages('up')">Shift +</button>
+        <button onclick="rotateImages('down')">Shift -</button>
       </div>
-      <div style="display: flex">
-        <h4>Cipher:</h4>
-        <p id="msg" style="font-size: 1.3em; height: 1.4em"></p>
-      </div>
-      <div style="display: flex">
-        <h4>Shift:</h4>
-        <h4 id="shift" style="height: 1.4em">0</h4>
-      </div>
-      <button id="reset" onclick="resetRotation()">Reset</button>
     </div>
+    <div style="display: flex">
+      <h4>Shift:</h4>
+      <h4 id="shift" style="height: 1.4em">0</h4>
+    </div>
+
+    <div class="image-container">
+      <!-- First set of stacked images -->
+      <div class="stacked-images">
+        <img src="wheelBig.png" alt="Image 1" />
+        <img src="wheelSmall.png" alt="Image 2" class="overlay-image" />
+      </div>
+
+      <!-- Second set of stacked images -->
+      <!-- <div class="stacked-images">
+        <img src="letters.png" alt="Image 3" />
+        <img src="lettersSmall.png" alt="Image 4" class="overlay-image" />
+      </div> -->
+    </div>
+    <div style="display: flex">
+      <p id="msg" style="font-size: 1.3em; height: 1.4em"></p>
+    </div>
+    <button id="reset" onclick="resetRotation()" style="margin: 15px">
+      Reset
+    </button>
     <script>
-      let current_rotation = 0;
-      let rotation = 360 / 26;
-      let alphabet = [
+      let alphabetLower = [
         "a",
         "b",
         "c",
@@ -97,44 +103,105 @@
         "y",
         "z",
       ];
+      let alphabetUpper = [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z",
+      ];
+      // Get the overlay images
+      const overlayImages = document.querySelectorAll(".overlay-image");
+      const angle = 360 / 26;
+      let rotationAngle = 0;
+      let shift = 0;
 
       resetRotation = function () {
-        document.querySelector(".rotate").style.transform = "rotate(0deg)";
-        current_rotation = 0;
+        //sets angle back to 0
+        overlayImages.forEach((image) => {
+          image.style.transform = "rotate(0deg)";
+        });
+
+        rotationAngle = 0;
         shift = 0;
         document.getElementById("msg").textContent = updateMessage(
           document.getElementById("message").value
         );
         document.getElementById("shift").textContent = shift;
       };
-      shift = 0;
-      updateMessage = function (message) {
-        if (!parseInt(message)) {
-          message = message.toLowerCase();
-          msgList = [...message];
-          for (let i = 0; i < msgList.length; i++) {
-            //shifts char by 1 in alphabet, if z -> a
-            msgList[i] = alphabet[(alphabet.indexOf(msgList[i]) + shift) % 26];
-          }
-          message = msgList.join("");
-          return message;
-        } else {
-          return null;
+
+      // Function to rotate the images
+      function rotateImages(dir) {
+        currentMsg = document.getElementById("message").value;
+        if (dir == "up") {
+          rotationAngle += 360 / 26; // Adjust the rotation angle as desired
+
+          shift = (shift + 1) % 25;
+        } else if (dir == "down") {
+          rotationAngle -= 360 / 26; // Adjust the rotation angle as desired
+          shift = (shift - 1) % 25;
         }
+        document.getElementById("shift").textContent = shift;
+        document.getElementById("msg").textContent = updateMessage(currentMsg);
+        overlayImages.forEach((image) => {
+          image.style.transform = `rotate(${rotationAngle}deg)`;
+        });
+      }
+
+      updateMessage = function (message) {
+        msgList = [...message];
+        for (let i = 0; i < msgList.length; i++) {
+          lowerCase = true;
+          if (msgList[i].toLowerCase() == msgList[i]) {
+            char = alphabetLower.indexOf(msgList[i]);
+          } else {
+            char = alphabetUpper.indexOf(msgList[i]);
+            lowerCase = false;
+          }
+          if (char != -1) {
+            //if the character is a letter, only then shift
+            letter = char + shift;
+            //js can't handle -1 modular, so make it positive
+            while (letter < 0) {
+              letter += 26;
+            }
+            //shift it by given shift
+            if (lowerCase) {
+              msgList[i] = alphabetLower[letter % 26];
+            } else {
+              msgList[i] = alphabetUpper[letter % 26];
+            }
+          }
+        }
+        //make the message back into a word
+        message = msgList.join("");
+        return message;
       };
 
       document.querySelector("#message").addEventListener("input", () => {
         currentMsg = document.getElementById("message").value;
         document.getElementById("msg").textContent = updateMessage(currentMsg);
-      });
-      document.querySelector("#rotateBtn").addEventListener("click", () => {
-        currentMsg = document.getElementById("message").value;
-        shift++;
-        document.getElementById("shift").textContent = shift;
-        document.getElementById("msg").textContent = updateMessage(currentMsg);
-        current_rotation += rotation;
-        document.querySelector(".rotate").style.transform =
-          "rotate(" + current_rotation + "deg)";
       });
     </script>
   </body>
