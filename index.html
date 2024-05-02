@@ -156,11 +156,10 @@
         currentMsg = document.getElementById("message").value;
         if (dir == "up") {
           rotationAngle += 360 / 26; // Adjust the rotation angle as desired
-
-          shift = (shift + 1) % 25;
+          shift = (shift + 1) % 26;
         } else if (dir == "down") {
           rotationAngle -= 360 / 26; // Adjust the rotation angle as desired
-          shift = (shift - 1) % 25;
+          shift = (shift - 1) % 26;
         }
         document.getElementById("shift").textContent = shift;
         document.getElementById("msg").textContent = updateMessage(currentMsg);
